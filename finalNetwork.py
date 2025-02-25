@@ -5,7 +5,7 @@ import time
 from scholarly import scholarly
 
 # Load faculty data
-faculty_df = pd.read_excel("SNA/Mini Proj/Faculty.xlsx")
+faculty_df = pd.read_excel("SNA/Mini-Proj/Faculty.xlsx")
 
 # Initialize Graph
 G = nx.DiGraph()
@@ -61,6 +61,48 @@ for index, row in faculty_df.iterrows():
 # Save citation network to Excel
 citation_df = pd.DataFrame(citation_data)
 citation_df.to_excel("faculty_citation_network.xlsx", index=False)
+
+# 1. Degree Centrality (Direct Connections)
+degree_centrality = nx.degree_centrality(G)
+
+# 2. Betweenness Centrality (Bridges Between Groups)
+betweenness_centrality = nx.betweenness_centrality(G)
+
+# 3. Closeness Centrality (Efficiency in Reaching Others)
+closeness_centrality = nx.closeness_centrality(G)
+
+# 4. Eigenvector Centrality (Influence Based on Neighbors)
+eigenvector_centrality = nx.eigenvector_centrality(G, max_iter=1000)
+
+# 5. Graph Density (Overall Connectivity Level)
+graph_density = nx.density(G)
+
+# 6. Average Clustering Coefficient (Tendency to Form Clusters)
+try:
+    clustering_coefficient = nx.average_clustering(G.to_undirected())  # Convert to undirected for calculation
+except:
+    clustering_coefficient = "Not available (due to directed nature)"
+
+
+# Store Measures in a DataFrame
+centrality_measures = pd.DataFrame({
+    "Faculty_ID": list(G.nodes()),
+    "Degree Centrality": [degree_centrality.get(n, 0) for n in G.nodes()],
+    "Betweenness Centrality": [betweenness_centrality.get(n, 0) for n in G.nodes()],
+    "Closeness Centrality": [closeness_centrality.get(n, 0) for n in G.nodes()],
+    "Eigenvector Centrality": [eigenvector_centrality.get(n, 0) for n in G.nodes()],
+})
+
+# Save to Excel
+centrality_measures.to_excel("faculty_centrality_measures.xlsx", index=False)
+
+# Print Overall Network Statistics
+print("\n### Network Statistics ###\n\n")
+print(f"Graph Density: {graph_density}")
+print(f"Average Clustering Coefficient: {clustering_coefficient}\n")
+print("Top 5 Influential Nodes (Degree Centrality):\n")
+print(f"Degree Centrality: {degree_centrality}")
+
 
 # Visualization
 plt.figure(figsize=(10, 8))
